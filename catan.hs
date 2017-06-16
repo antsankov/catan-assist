@@ -1,5 +1,4 @@
 import Data.Tuple.Select
-
 import Data.Map
 
 
@@ -9,8 +8,7 @@ type Settlement = [Coord]
 data Resource = Sheep | Brick | Ore | Wood | Wheat deriving (Show)
 data Tile = Tile { resource :: Resource
                  , score :: Int
-                 }
-                 deriving (Show)
+                 } deriving (Show)
 
 coordList :: [Coord]
 coordList = [           ( 0,2),( 1,2),( 2,2)
@@ -20,15 +18,17 @@ coordList = [           ( 0,2),( 1,2),( 2,2)
             ,           ( -2,-2),( -1,-2), (0,-2)
             ]
 
-testBoard :: [(Coord, Tile)]
-testBoard = [
+testBoard :: Map Coord Tile 
+testBoard = fromList[
                 ((0,2), Tile Brick 3)
             ,   ((1,2), Tile Ore 2)
+            ,   ((-1, 1), Tile Wheat 3)
+            ,   ((0, 1), Tile Sheep 5)
             ]
 
 -- Given a hex coord, give the hexs bordered by all possible settlements.
-borders :: Coord -> [Settlement]
-borders hex =
+possibleSettlements :: Coord -> [Settlement]
+possibleSettlements hex =
     [    -- 0 deg
          [hex, (sel1 hex, sel2 hex + 1), (sel1 hex +1, sel2 hex+1)]
          -- 60 deg
@@ -53,14 +53,15 @@ getFst :: (Int, Int) -> Int
 getFst tup =
     fst tup
 
-calculateValue :: Coord -> Maybe Tile
-calculateValue loc =
-    let 
-        board = fromList(testBoard) 
-    in
-        Data.Map.lookup (0,2) board
+-- Given a settlement, return the tiles it touches.
+calcSettlementTiles :: Settlement -> [Maybe Tile]
+calcSettlementTiles settlement =
+    Prelude.map (\loc -> Data.Map.lookup loc testBoard) settlement
+
+-- calcSettlementValue
 
 main = 
-    -- print $ borders (0, 0)
-    print $ calculateValue (1, 2)
+    -- print $ possibleSettlements (0, 1)
+    -- print $ getTile (1, 2)
+    print $ calcSettlementTiles [(0,1),(0,2),(1,2)]
     -- print $ getFst (10,11)
