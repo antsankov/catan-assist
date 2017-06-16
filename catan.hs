@@ -1,3 +1,5 @@
+-- TODO iterate through list of maybe tiles to create an aggregate score
+
 import Data.Tuple.Select
 import Data.Map
 
@@ -9,6 +11,7 @@ data Resource = Sheep | Brick | Ore | Wood | Wheat deriving (Show)
 data Tile = Tile { resource :: Resource
                  , score :: Int
                  } deriving (Show)
+
 
 coordList :: [Coord]
 coordList = [           ( 0,2),( 1,2),( 2,2)
@@ -43,25 +46,18 @@ possibleSettlements hex =
     ,    [hex, (sel1 hex - 1, sel2 hex), (sel1 hex, sel2 hex + 1)]
     ]
 
--- TODO: Generate tiles with resources, make a hashmap from tile to coord, iterate through borders to create scores.
-mapTest :: [Int] -> [Int] 
-mapTest settlement =
-    Prelude.map (+1) settlement
-
-
-getFst :: (Int, Int) -> Int
-getFst tup =
-    fst tup
-
 -- Given a settlement, return the tiles it touches.
 calcSettlementTiles :: Settlement -> [Maybe Tile]
 calcSettlementTiles settlement =
     Prelude.map (\loc -> Data.Map.lookup loc testBoard) settlement
 
--- calcSettlementValue
+
+-- Extract the aggregate score for an array of tiles.
+calcSettlementValue :: [Maybe Tile] -> Int
+calcSettlementValue tiles =
+    fold (+) tiles . score
 
 main = 
     -- print $ possibleSettlements (0, 1)
-    -- print $ getTile (1, 2)
     print $ calcSettlementTiles [(0,1),(0,2),(1,2)]
-    -- print $ getFst (10,11)
+
