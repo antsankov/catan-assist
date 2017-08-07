@@ -1,4 +1,5 @@
--- Iterate through all possible settlments, calculating their scores.
+-- TODO: Spit out best score for tile and its location
+
 import Data.Tuple.Select
 import Data.Map
 
@@ -44,6 +45,7 @@ possibleSettlements hex =
     ,    [hex, (sel1 hex - 1, sel2 hex), (sel1 hex, sel2 hex + 1)]
     ]
 
+
 -- Extract the aggregate score for an array of tiles.
 calcSettlementValue :: [Coord] -> Int
 calcSettlementValue tiles =
@@ -56,13 +58,15 @@ extractScore coord =
         Nothing -> 0
         Just tile -> score tile
 
--- DEPRECATED Given a settlement, return the tiles it touches.
-calcSettlementTiles :: Settlement -> [Maybe Tile]
-calcSettlementTiles settlement =
-    Prelude.map (\loc -> Data.Map.lookup loc testBoard) settlement
-
+-- Given a title, find the value of all possible settlements
+appraiseTile :: Coord -> Int
+appraiseTile tileCoord = 
+    let
+        possible = possibleSettlements(tileCoord)
+    in
+        maximum $ Prelude.map calcSettlementValue possible
 
 main = 
     -- print $ possibleSettlements (0, 1)
-    print $ calcSettlementValue [(0,1),(0,2),(1,2)]
-
+    -- print $ calcSettlementValue [(0,1),(0,2),(1,2)]
+    print $ maximum $ Prelude.map appraiseTile coordList
