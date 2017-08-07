@@ -1,8 +1,6 @@
--- TODO iterate through list of maybe tiles to create an aggregate score
-
+-- Iterate through all possible settlments, calculating their scores.
 import Data.Tuple.Select
 import Data.Map
-
 
 type Coord = (Int, Int)
 type Settlement = [Coord]
@@ -46,18 +44,25 @@ possibleSettlements hex =
     ,    [hex, (sel1 hex - 1, sel2 hex), (sel1 hex, sel2 hex + 1)]
     ]
 
--- Given a settlement, return the tiles it touches.
+-- Extract the aggregate score for an array of tiles.
+calcSettlementValue :: [Coord] -> Int
+calcSettlementValue tiles =
+    sum $ Prelude.map extractScore tiles
+
+-- Given a coordinate, get the score from it.
+extractScore :: Coord -> Int
+extractScore coord =
+    case Data.Map.lookup coord testBoard of
+        Nothing -> 0
+        Just tile -> score tile
+
+-- DEPRECATED Given a settlement, return the tiles it touches.
 calcSettlementTiles :: Settlement -> [Maybe Tile]
 calcSettlementTiles settlement =
     Prelude.map (\loc -> Data.Map.lookup loc testBoard) settlement
 
 
--- Extract the aggregate score for an array of tiles.
-calcSettlementValue :: [Maybe Tile] -> Int
-calcSettlementValue tiles =
-    fold (+) tiles . score
-
 main = 
     -- print $ possibleSettlements (0, 1)
-    print $ calcSettlementTiles [(0,1),(0,2),(1,2)]
+    print $ calcSettlementValue [(0,1),(0,2),(1,2)]
 
